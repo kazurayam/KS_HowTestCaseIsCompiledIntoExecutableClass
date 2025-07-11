@@ -26,4 +26,4 @@ WebUI.executeJavaScript(js, null);
 
 WebUI.verifyElementPresent(makeTestObject("input[id *= 'txt-username'"), 10)
 WebUI.delay(3)
-//WebUI.closeBrowser()
+WebUI.closeBrowser()
