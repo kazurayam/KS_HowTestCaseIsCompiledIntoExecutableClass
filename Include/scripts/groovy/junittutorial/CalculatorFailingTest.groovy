@@ -10,7 +10,7 @@ import org.junit.runners.JUnit4
 
 @RunWith(JUnit4.class)
 public class CalculatorFailingTest {
-	
+
 	/**
 	 * this test fails, no catching it
 	 */
@@ -20,5 +20,4 @@ public class CalculatorFailingTest {
 		int actual = 0
 		assertEquals(actual, expected)
 	}
-
 }

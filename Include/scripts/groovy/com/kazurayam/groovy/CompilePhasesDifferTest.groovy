@@ -6,6 +6,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
+
+@RunWith(JUnit4.class)
 class CompilePhasesDifferTest {
 
 	@Test

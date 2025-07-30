@@ -37,6 +37,5 @@ class AstTestStepTransformationTest {
 	void test_visitScriptCode() {
 		def visitor = new AstTestStepTransformation()
 		ast[0].visit(visitor, null)
-		
 	}
 }
