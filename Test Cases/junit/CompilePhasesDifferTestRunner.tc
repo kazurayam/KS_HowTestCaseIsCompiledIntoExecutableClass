@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>AstTestStepTransformationTestRunner</name>
+   <name>CompilePhasesDifferTestRunner</name>
    <tag></tag>
    <comment></comment>
    <recordOption>OTHER</recordOption>
-   <testCaseGuid>73a2e779-2d97-4e36-aadf-eb623729cb2d</testCaseGuid>
+   <testCaseGuid>8ec88f11-4c9c-40c9-87a8-a34f4bad14e3</testCaseGuid>
 </TestCaseEntity>
