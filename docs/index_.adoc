@@ -1,117 +1,75 @@
-== Lorem ipsum
+= [Katalon Studio] How a Test Case Groovy script is compiled into an executable class file
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+== Problem to solve
 
-=== Ut enim ad minim veriam
+Here is a sample Test Case script (*.groovy) of Katalon Studio:
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+[source,groovy]
+----
+include::../Scripts/Main/TC0_start_login/Script1754480671079.groovy[]
+----
 
-==== Duis aute irure dolor
+I can run this script in Katalon Studio, of course. I am quote used to it.
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+But I am curious about how this script is compiled into an executable JVM `class` file. I want to know the details of the compilation process.
 
-===== Excepteur sint occaecat cupidatat
+== How the executable class look like
 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+In short, the following groovy source code presents how the binary `*.class` file that Groovy Compiler generates from the above script.
 
-== Quo usque tandem abutere
+[source]
+----
+include::testOutput/TestCaseCompilePhasesDifferTest/report/Main_TC0_start_login-9_FINALIZATION.groovy[]
+----
 
-Quo usque tandem abutere, Catilina, patientia nostra?
+What do I find in this souce code interesting?
 
-== Header with (& - _ : ; ) non Latin Characters
+1. The resulting groovy source code has a complete `class` definition, which implements `void main()` method and `void runScript()` method.
+2. The `main()` method is obviously the entry point of the executable class. The `main()` method calls `runScript()` method.
+3. The `runScript()` method contains the original set of Groovy statements.
+4. And also in front of the `class` definition, I can find the original set of Groovy statements. It is obvious that the statements in from of the `class` definistion will never be executed by the `main()` method of the `class`. To me the statements outside the `class` definition look like a ruin forgotten.
 
-Quam diu etiam furor iste tuus nos eludet?
+Other point of interest is the way how the `makeTestObject()` function is treated. The `makeTestObject()` is originally defined as a function in the Test Case script. The resulting `class` implements `private TestObject makeTestObject()` function. This transformation looks quite understandable to me.
 
-== Source code inclusion example
+== How to run the demo
+
+Open `Test Cases/junit/com.kazurayam.ks/TestCaseCompilePhasesDifferTestRunner` in Katalon Studio, and run it.
+
+You will see the following output in the `build/tmp/testOutput/` directory:
 
 [source,shell]
 ----
-include::./adoc2md.sh[lines=1..100]
+$ tree .
+.
+└── TestCaseCompilePhasesDifferTest
+    ├── classes
+    │   └── Main_TC0_start_login.class
+    └── report
+        ├── Main_TC0_start_login-1_INITIALIZATION.groovy
+        ├── Main_TC0_start_login-2_PARSING.groovy
+        ├── Main_TC0_start_login-3_CONVERSION.groovy
+        ├── Main_TC0_start_login-4_SEMANTIC_ANALYSIS.groovy
+        ├── Main_TC0_start_login-5_CANONICALIZATION.groovy
+        ├── Main_TC0_start_login-6_INSTRUCTION_SELECTION.groovy
+        ├── Main_TC0_start_login-7_CLASS_GENERATION.groovy
+        ├── Main_TC0_start_login-8_OUTPUT.groovy
+        ├── Main_TC0_start_login-9_FINALIZATION.groovy
+        └── Main_TC0_start_login-CompilePhasesDiff.md
 ----
 
-== Diagram example
+You can open the `Main_TC0_start_login-9_FINALIZATION.groovy` file in Katalon Studio, and you will see the rebuilt source code of the executable class.
 
-Generated using link:https://plantuml.com/ja/[PlantUML]
+The `Main_TC0_start_login-CompilePhasesDiff.md` file contains the diff report of the original script and the rebuilt source code. Katalon Studio does not provide "Markdown Viewer". You should use Visual Studio Code or any other Markdown viewer to read the diff report.
 
-image::https://kazurayam.github.io/adoc2md/diagrams/out/sequence/sequence.png[]
+== How the demo is designed
 
-== 宮沢賢治の詩その1
+How did I get this script? --- I used a Groovy class that I developed externally.
 
-心象スケッチ　春と修羅
+- link:https://github.com/kazurayam/GroovyCompilePhasesDiffer[GoovyCompilePhasesDiffer]
 
-```
-わたくしといふ現象は
-仮定された有機交流電燈の
-ひとつの青い照明です
-（あらゆる透明な幽霊の複合体）
-風景やみんなといつしよに
-せはしくせはしく明滅しながら
-いかにもたしかにともりつづける
-因果交流電燈の
-ひとつの青い照明です
-（ひかりはたもち　その電燈は失はれ）
+You need to download 2 jar files and place them in the `Drivers` folder.
 
-これらは二十二箇月の
-過去とかんずる方角から
-紙と鉱質インクをつらね
-（すべてわたくしと明滅し
-　みんなが同時に感ずるもの）
-ここまでたもちつゞけられた
-かげとひかりのひとくさりづつ
-そのとほりの心象スケッチです
-```
+- link:https://mvnrepository.com/artifact/io.github.java-diff-utils/java-diff-utils/4.16[java-diff-utils]
 
-== 宮沢賢治の詩その2
+- link:https://github.com/kazurayam/GroovyCompilePhasesDiffer/releases/tag/untagged-08d7fdce06c7a67b200e[groovy-compile-phases-differ]
 
-```
-雨ニモマケズ
-風ニモマケズ
-雪ニモ夏ノ暑サニモマケヌ
-丈夫ナカラダヲモチ
-欲ハナク
-決シテ瞋ラズ
-イツモシヅカニワラッテヰル
-一日ニ玄米四合ト
-味噌ト少シノ野菜ヲタベ
-アラユルコトヲ
-ジブンノカンジョウニ入レズニ
-ヨクミキキシワカリ
-ソシテワスレズ
-野原ノ松ノ林ノ蔭ノ
-小サナ萱ブキノ小屋にヰテ
-東に病気ノコドモアレバ
-行ッテ看病シテヤリ
-西ニ疲レタ母アレバ
-行ッテソノ稲ノ束ヲ負ヒ
-南ニシニサウナ人アレバ
-行ッテコハガラナクテモイゝトイヒ
-北にケンクヮヤソショウガアレバ
-ツマラナイカラヤメロとイヒ
-ヒドリノトキハナミダヲナガし
-サムサノナツハオロオロアルキ
-ミンナニデクノボー トヨバレ
-ホメラレモセズ
-クニモサレズ
-サウイフモノニ
-ワタシハナリタイ
-
-南無無辺行菩薩
-南無上行菩薩
-南無多宝如来
-南無妙法蓮華経
-南無釈迦牟尼仏
-南無浄行菩薩
-南無安立行菩薩
-```
-
-== Dolorem ipsum
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed tempus urna et pharetra pharetra massa. Praesent tristique magna sit amet purus. Fermentum et sollicitudin ac orci phasellus egestas tellus rutrum tellus. In cursus turpis massa tincidunt dui ut. Massa tincidunt nunc pulvinar sapien et ligula ullamcorper. Facilisis mauris sit amet massa vitae tortor condimentum. Sapien faucibus et molestie ac feugiat sed lectus vestibulum. Eu turpis egestas pretium aenean pharetra magna ac placerat. Nulla aliquet porttitor lacus luctus accumsan tortor posuere. Sit amet purus gravida quis blandit turpis cursus. Suspendisse sed nisi lacus sed. Laoreet non curabitur gravida arcu ac. Dolor sit amet consectetur adipiscing elit pellentesque. Egestas quis ipsum suspendisse ultrices gravida dictum fusce ut placerat.
-
-Praesent tristique magna sit amet purus gravida quis blandit turpis. Vitae congue mauris rhoncus aenean vel elit scelerisque mauris. Suspendisse faucibus interdum posuere lorem ipsum dolor sit. Sem integer vitae justo eget magna fermentum iaculis eu. Felis bibendum ut tristique et egestas. Vel orci porta non pulvinar neque laoreet. Ac tortor vitae purus faucibus ornare suspendisse sed. In mollis nunc sed id semper. Pellentesque id nibh tortor id aliquet lectus proin. Id faucibus nisl tincidunt eget nullam non nisi est. Senectus et netus et malesuada fames ac turpis egestas. Viverra vitae congue eu consequat ac. Vel pharetra vel turpis nunc eget lorem dolor sed viverra. Sodales ut eu sem integer vitae. Pharetra vel turpis nunc eget lorem. Nam at lectus urna duis convallis convallis tellus. Massa tempor nec feugiat nisl pretium fusce id velit ut. Et ultrices neque ornare aenean euismod elementum nisi. Ut morbi tincidunt augue interdum velit. Fermentum iaculis eu non diam phasellus vestibulum lorem sed risus.
-
-Et sollicitudin ac orci phasellus egestas tellus. Sit amet purus gravida quis blandit turpis cursus. Interdum varius sit amet mattis vulputate enim nulla aliquet. Quam id leo in vitae turpis massa sed elementum. Justo donec enim diam vulputate ut pharetra sit amet aliquam. Mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Leo integer malesuada nunc vel risus commodo viverra maecenas. Neque viverra justo nec ultrices dui sapien eget mi. Vel risus commodo viverra maecenas. Purus in massa tempor nec feugiat nisl pretium fusce. In nisl nisi scelerisque eu ultrices vitae. Nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut. Elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices sagittis orci a scelerisque purus semper. Aliquam sem et tortor consequat id. Sed vulputate odio ut enim blandit volutpat maecenas volutpat. Sed euismod nisi porta lorem mollis aliquam.
-
-Faucibus ornare suspendisse sed nisi lacus sed viverra. Duis at tellus at urna. Sem fringilla ut morbi tincidunt augue interdum. Proin libero nunc consequat interdum varius sit amet. Elementum facilisis leo vel fringilla est. In fermentum posuere urna nec tincidunt. Urna id volutpat lacus laoreet non curabitur gravida arcu ac. Arcu ac tortor dignissim convallis aenean et tortor. Odio facilisis mauris sit amet massa vitae tortor condimentum. At tellus at urna condimentum mattis pellentesque. Sed tempus urna et pharetra pharetra massa. Gravida quis blandit turpis cursus in hac. Enim neque volutpat ac tincidunt vitae semper quis lectus nulla. Egestas sed tempus urna et pharetra pharetra massa massa ultricies.
-
-Aliquam purus sit amet luctus venenatis lectus magna. Vitae ultricies leo integer malesuada. Sit amet facilisis magna etiam tempor orci eu. Nec nam aliquam sem et tortor consequat id porta. Est ante in nibh mauris. Eu feugiat pretium nibh ipsum consequat nisl vel. Tristique risus nec feugiat in fermentum posuere urna nec tincidunt. Mauris vitae ultricies leo integer malesuada nunc vel risus commodo. Ultrices neque ornare aenean euismod elementum nisi quis eleifend quam. Lacus vel facilisis volutpat est velit egestas. Non curabitur gravida arcu ac tortor dignissim convallis aenean et. Volutpat est velit egestas dui id ornare arcu odio ut. Venenatis a condimentum vitae sapien pellentesque. Amet nisl suscipit adipiscing bibendum est ultricies integer. Lectus quam id leo in. Non curabitur gravida arcu ac tortor dignissim convallis aenean.

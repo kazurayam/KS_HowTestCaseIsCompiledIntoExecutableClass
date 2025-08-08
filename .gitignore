@@ -17,4 +17,6 @@ build
 
 .cache
 
+*.class
+
 entityReference.index
