@@ -112,7 +112,7 @@ What do I find in this souce code interesting?
 
 3.  The `runScript()` method contains the original set of Groovy statements.
 
-4.  And also in front of the `class` definition, I can find the original set of Groovy statements. It is obvious that the statements in from of the `class` definistion will never be executed by the `main()` method of the `class`. To me the statements outside the `class` definition look like a ruin forgotten.
+4.  And also in front of the `class` definition, I can find the original set of Groovy statements. These statements are syntactically valid; no problem if these statements are there. But it is obvious that the statements in front of the `class` definistion will never be executed by the `main()` method of the `class`. To me the statements outside the `class` definition look like a forgotten ruin.
 
 Other point of interest is the way how the `makeTestObject()` function is treated. The `makeTestObject()` is originally defined as a function in the Test Case script. The resulting `class` implements `private TestObject makeTestObject()` function. This transformation looks quite understandable to me.
 
